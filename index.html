@@ -1,0 +1,431 @@
+
+index.html
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ina-vicaL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Results Sidebar (Fixed Left) -->
+        <aside class="results-sidebar">
+            <div class="sidebar-header">
+                <h2>Results</h2>
+                <button class="btn-copy" onclick="copyResults()" title="Copy Results">📋</button>
+            </div>
+            <div class="sidebar-result calc-stats">
+                <h3>Effective Stats<br><span class="subtitle">(計算値)</span></h3>
+                <div class="stats-column">
+                    <div class="stat-mini">
+                        <span class="mini-label">Kick</span>
+                        <div class="result-value" id="calcKick">0</div>
+                    </div>
+                    <div class="stat-mini">
+                        <span class="mini-label">Ctrl</span>
+                        <div class="result-value" id="calcControl">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-result">
+                <h3>Character Power<br><span class="subtitle">(キャラシュート力)</span></h3>
+                <div class="result-value" id="characterPower">0</div>
+            </div>
+            <div class="sidebar-result tech-power">
+                <h3>Tech Power<br><span class="subtitle">(技威力)</span></h3>
+                <div class="result-value" id="techniquePowerDisplay">0</div>
+            </div>
+            <div class="sidebar-result total-box">
+                <h3>Total AT<br><span class="subtitle">(トータルAT)</span></h3>
+                <div class="result-value" id="totalAt">0</div>
+            </div>
+        </aside>
+        <!-- Main Content (Right Aligned) -->
+        <div class="content-wrapper">
+            <header>
+                <h1>⚽ ina-vicaL</h1>
+            </header>
+            <main class="main-content">
+                <!-- Mode Selection (Tabs) -->
+                <div class="mode-tabs">
+                    <button class="tab-btn active" onclick="setMode('preset')" id="tab-preset">Preset Mode
+                        (プリセット)</button>
+                    <button class="tab-btn" onclick="setMode('manual')" id="tab-manual">Direct Input (直接入力)</button>
+                </div>
+                <!-- Hidden inputs for mode compatibility if needed, but we will update JS to track state directly -->
+                <!-- PRESET MODE -->
+                <div id="presetContainer" class="mode-container">
+                    <!-- NEW: Category Selector (Replacing Rarity) -->
+                    <div class="input-group" style="margin-bottom: 1rem;">
+                        <label for="presetCategory" class="label-small">Rarity (レアリティ):</label>
+                        <select id="presetCategory" style="display:none;" onchange="togglePresetCategory()">
+                            <option value="standard">Standard (Legendary)</option>
+                            <option value="basara">BASARA (Future)</option>
+                            <option value="hero">HERO (Future)</option>
+                        </select>
+                        <div class="segmented-control">
+                            <button class="segment-btn active"
+                                onclick="setSegment('presetCategory', 'standard', this); togglePresetCategory();">Standard</button>
+                            <button class="segment-btn"
+                                onclick="setSegment('presetCategory', 'basara', this); togglePresetCategory();">BASARA</button>
+                            <button class="segment-btn"
+                                onclick="setSegment('presetCategory', 'hero', this); togglePresetCategory();">HERO</button>
+                        </div>
+                    </div>
+                    <!-- STANDARD PRESETS -->
+                    <div id="presets-standard" class="preset-group">
+                        <!-- Rarity removed (now implied as Standard=Legendary) -->
+                        <span class="label-small">Tribe Selection (族選択):</span>
+                        <div class="preset-row">
+                            <span class="role-label fw">FW</span>
+                            <button class="btn-preset" onclick="setPreset(121, 115, this)">FW① 豪炎寺型 (121/115)</button>
+                            <button class="btn-preset" onclick="setPreset(114, 112, this)">FW② ハル型 (114/112)</button>
+                            <button class="btn-preset" onclick="setPreset(117, 112, this)">FW③ 染岡型 (117/112)</button>
+                        </div>
+                        <div class="preset-row">
+                            <span class="role-label mf">MF</span>
+                            <button class="btn-preset" onclick="setPreset(104, 112, this)">MF① 鬼道型 (104/112)</button>
+                            <button class="btn-preset" onclick="setPreset(100, 115, this)">MF② 天馬型 (100/115)</button>
+                            <button class="btn-preset" onclick="setPreset(97, 112, this)">MF③ 少林寺D型 (97/112)</button>
+                        </div>
+                        <div class="preset-row">
+                            <span class="role-label df">DF</span>
+                            <button class="btn-preset" onclick="setPreset(90, 94, this)">DF① 風丸型 (90/94)</button>
+                            <button class="btn-preset" onclick="setPreset(83, 86, this)">DF② テレス型 (83/86)</button>
+                        </div>
+                        <div class="preset-row">
+                            <span class="role-label gk">GK</span>
+                            <button class="btn-preset" onclick="setPreset(90, 97, this)">GK① 円堂型 (90/97)</button>
+                            <button class="btn-preset" onclick="setPreset(86, 94, this)">GK② デザーム型 (86/94)</button>
+                        </div>
+                    </div>
+                    <!-- BASARA PRESETS (Placeholder) -->
+                    <div id="presets-basara" class="preset-group hidden">
+                        <div class="help-text"
+                            style="padding: 1rem; text-align: center; border: 1px dashed var(--border);">
+                            BASARA Presets coming soon...
+                        </div>
+                    </div>
+                    <!-- HERO PRESETS (Placeholder) -->
+                    <div id="presets-hero" class="preset-group hidden">
+                        <div class="help-text"
+                            style="padding: 1rem; text-align: center; border: 1px dashed var(--border);">
+                            HERO Presets coming soon...
+                        </div>
+                    </div>
+                    <hr class="separator">
+                    <div class="preset-components">
+                        <div class="stats-container">
+                            <div class="stat-row">
+                                <div class="stat-bean">
+                                    <label for="kickBean">Kick Beans (+0~82)</label>
+                                    <div class="input-with-btn">
+                                        <input type="number" id="kickBean" value="82" min="0" max="82">
+                                        <button class="btn-small" onclick="setMaxBeans('kick')">Max</button>
+                                        <button class="btn-small btn-clear"
+                                            onclick="setClearBeans('kick')">Clear</button>
+                                    </div>
+                                </div>
+                                <div class="stat-bean">
+                                    <label for="controlBean">Ctrl Beans (+0~82)</label>
+                                    <div class="input-with-btn">
+                                        <input type="number" id="controlBean" value="82" min="0" max="82">
+                                        <button class="btn-small" onclick="setMaxBeans('control')">Max</button>
+                                        <button class="btn-small btn-clear"
+                                            onclick="setClearBeans('control')">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="separator">
+                        <div class="stat-extras">
+                            <span class="label-small">Equipment (装備)</span>
+                            <div class="equip-grid">
+                                <div class="input-group">
+                                    <label>Shoes</label>
+                                    <select id="equipBoots" style="display:none;">
+                                        <option value="0,0" selected>なし</option>
+                                        <option value="35,35">スパイクモンスター</option>
+                                        <option value="31,29">ダークエンペラー</option>
+                                        <option value="0,30">エンシェントD</option>
+                                    </select>
+                                    <div class="segmented-control" style="flex-wrap: wrap;">
+                                        <button class="segment-btn active"
+                                            onclick="setSegment('equipBoots', '0,0', this)">なし</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipBoots', '35,35', this)">スパイクモンスター
+                                            (+35/+35)</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipBoots', '31,29', this)">ダークエンペラー
+                                            (+31/+29)</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipBoots', '0,30', this)">エンシェントD (+0/+30)</button>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>Bracelet</label>
+                                    <select id="equipBracelet" style="display:none;">
+                                        <option value="0,0" selected>なし</option>
+                                        <option value="30,29">深淵のミサンガ</option>
+                                        <option value="26,0">野望のバングル</option>
+                                        <option value="0,26">無限のバングル</option>
+                                    </select>
+                                    <div class="segmented-control" style="flex-wrap: wrap;">
+                                        <button class="segment-btn active"
+                                            onclick="setSegment('equipBracelet', '0,0', this)">なし</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipBracelet', '30,29', this)">深淵のミサンガ
+                                            (+30/+29)</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipBracelet', '26,0', this)">野望のバングル
+                                            (+26/+0)</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipBracelet', '0,26', this)">無限のバングル
+                                            (+0/+26)</button>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>Pendant</label>
+                                    <select id="equipPendant" style="display:none;">
+                                        <option value="0,0" selected>なし</option>
+                                        <option value="30,40">王者のマフラー</option>
+                                        <option value="29,29">エイリアストーン</option>
+                                        <option value="20,0">プリンセスマント</option>
+                                    </select>
+                                    <div class="segmented-control" style="flex-wrap: wrap;">
+                                        <button class="segment-btn active"
+                                            onclick="setSegment('equipPendant', '0,0', this)">なし</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipPendant', '30,40', this)">王者のマフラー
+                                            (+30/+40)</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipPendant', '29,29', this)">エイリアストーン
+                                            (+29/+29)</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipPendant', '20,0', this)">プリンセスマント
+                                            (+20/+0)</button>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>Special</label>
+                                    <select id="equipSpecial" style="display:none;">
+                                        <option value="0,0" selected>なし</option>
+                                        <option value="30,0">ベガサスのシール</option>
+                                        <option value="0,28">鬼道のゴーグル</option>
+                                        <option value="23,22">オメガリング</option>
+                                    </select>
+                                    <div class="segmented-control" style="flex-wrap: wrap;">
+                                        <button class="segment-btn active"
+                                            onclick="setSegment('equipSpecial', '0,0', this)">なし</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipSpecial', '30,0', this)">ベガサスのシール
+                                            (+30/+0)</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipSpecial', '0,28', this)">鬼道のゴーグル (+0/+28)</button>
+                                        <button class="segment-btn"
+                                            onclick="setSegment('equipSpecial', '23,22', this)">オメガリング
+                                            (+23/+22)</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- MANUAL MODE -->
+                <div id="manualContainer" class="mode-container hidden">
+                    <h3>Direct Input (直接入力)</h3>
+                    <p class="help-text">Enter total stats directly. Ignores Rarity/Beans/Equip.</p>
+                    <div class="stats-container">
+                        <div class="stat-row">
+                            <div class="stat-main">
+                                <label for="kickManual"><span class="icon">👟</span> Total Kick</label>
+                                <input type="number" id="kickManual" placeholder="Total" value="0">
+                            </div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat-main">
+                                <label for="controlManual"><span class="icon">🎯</span> Total Control</label>
+                                <input type="number" id="controlManual" placeholder="Total" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Common Matchup Section -->
+                <section class="card input-section">
+                    <h2>Matchup (相性)</h2>
+                    <div class="input-group full-width">
+                        <label>Character Matchup (キャラ相性)</label>
+                        <select id="charMatchup" style="display:none;">
+                            <option value="1.0" selected>Normal</option>
+                            <option value="1.2">Advantage</option>
+                            <option value="0.8">Disadvantage</option>
+                        </select>
+                        <div class="segmented-control">
+                            <button class="segment-btn" onclick="setSegment('charMatchup', '0.8', this)">不利
+                                (0.8)</button>
+                            <button class="segment-btn active" onclick="setSegment('charMatchup', '1.0', this)">等倍
+                                (1.0)</button>
+                            <button class="segment-btn" id="btnCharAdv"
+                                onclick="setSegment('charMatchup', '1.2', this)">有利 (1.2)</button>
+                        </div>
+                    </div>
+                </section>
+                <section class="card input-section">
+                    <h2>Technique (技)</h2>
+                    <div class="input-group">
+                        <label>Base Power (基本威力)</label>
+                        <select id="basePower" style="display:none;">
+                            <option value="30" selected>30</option>
+                            <option value="50">50</option>
+                            <option value="60">60</option>
+                            <option value="70">70</option>
+                            <option value="85">85</option>
+                            <option value="100">100</option>
+                        </select>
+                        <div class="segmented-control" style="flex-wrap: wrap;">
+                            <button class="segment-btn active" onclick="setSegment('basePower', '30', this)">30</button>
+                            <button class="segment-btn" onclick="setSegment('basePower', '50', this)">50</button>
+                            <button class="segment-btn" onclick="setSegment('basePower', '60', this)">60</button>
+                            <button class="segment-btn" onclick="setSegment('basePower', '70', this)">70</button>
+                            <button class="segment-btn" onclick="setSegment('basePower', '85', this)">85</button>
+                            <button class="segment-btn" onclick="setSegment('basePower', '100', this)">100</button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Evolution (進化)</label>
+                        <select id="evolution" style="display:none;">
+                            <option value="1" selected>Base</option>
+                            <option value="2">V2</option>
+                            <option value="3">V3</option>
+                            <option value="4">V4</option>
+                            <option value="5">A/GX</option>
+                            <option value="6">GO</option>
+                        </select>
+                        <div class="segmented-control">
+                            <button class="segment-btn active"
+                                onclick="setSegment('evolution', '1', this)">Base</button>
+                            <button class="segment-btn" onclick="setSegment('evolution', '2', this)">V2</button>
+                            <button class="segment-btn" onclick="setSegment('evolution', '3', this)">V3</button>
+                            <button class="segment-btn" onclick="setSegment('evolution', '4', this)">V4</button>
+                            <button class="segment-btn" onclick="setSegment('evolution', '5', this)">GX</button>
+                            <button class="segment-btn" onclick="setSegment('evolution', '6', this)">GO</button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Tech Matchup (技相性)</label>
+                        <select id="techMatchup" style="display:none;">
+                            <option value="1.0" selected>Normal</option>
+                            <option value="1.2">Advantage</option>
+                            <option value="0.8">Disadvantage</option>
+                        </select>
+                        <div class="segmented-control">
+                            <button class="segment-btn" onclick="setSegment('techMatchup', '0.8', this)">不利
+                                (0.8)</button>
+                            <button class="segment-btn active" onclick="setSegment('techMatchup', '1.0', this)">等倍
+                                (1.0)</button>
+                            <button class="segment-btn" id="btnTechAdv"
+                                onclick="setSegment('techMatchup', '1.2', this)">有利
+                                (1.2)</button>
+                        </div>
+                    </div>
+                </section>
+                <section class="card input-section">
+                    <h2>Bonuses</h2>
+                    <div class="input-group">
+                        <!-- Super Dimensional Moves -->
+                        <div class="input-group">
+                            <label>Super Dimensional Moves (超次元技)</label>
+                            <div class="segmented-control" id="superMoveControl"
+                                style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem;">
+                                <button class="segment-btn active" onclick="setSuperMove('none', this)">なし</button>
+                                <button class="segment-btn" onclick="setSuperMove('od', this)">オーバードライブ (+50%)</button>
+                                <button class="segment-btn" onclick="setSuperMove('keshin', this)">化身 (+40%)</button>
+                                <button class="segment-btn" onclick="setSuperMove('armed', this)">アームド
+                                    (+20%/技1.3倍)</button>
+                                <button class="segment-btn" onclick="setSuperMove('accel', this)">エレメントアクセル
+                                    (+30%)</button>
+                                <button class="segment-btn" onclick="setSuperMove('boost30', this)">Boost他
+                                    (+30%)</button>
+                            </div>
+                        </div>
+                        <!-- Manual Other -->
+                        <div class="input-group">
+                            <label for="multiplier">Other (その他補正)</label>
+                            <div style="display:flex; gap:0.3rem; align-items:center; flex-wrap:wrap;">
+                                <input type="number" id="multiplier" placeholder="0" value="0"
+                                    style="flex:1; min-width:60px;" oninput="handleManualInput(this.value)">
+                                <button class="btn-small" onclick="addManualBonus(10)">+10</button>
+                                <button class="btn-small" onclick="addManualBonus(20)">+20</button>
+                                <button class="btn-small" onclick="addManualBonus(30)">+30</button>
+                                <button class="btn-small" onclick="clearBonuses()">Clr</button>
+                                <button class="btn-small" id="btnTogglePassive"
+                                    style="background:#f1f5f9; border:1px solid #cbd5e1; color:#333;"
+                                    onclick="togglePassives()">Passives▼</button>
+                            </div>
+                        </div>
+                        <hr class="separator">
+                        <!-- Passives Grid -->
+                        <div class="input-group" id="passiveContainer" style="display:none;">
+                            <div class="passive-grid">
+                                <!-- Build -->
+                                <div class="p-item"><label>正義 (Justice)</label><input type="number" id="p_justice"
+                                        placeholder="0"></div>
+                                <div class="p-item"><label>カウンター (Counter)</label><input type="number" id="p_counter"
+                                        placeholder="0"></div>
+                                <div class="p-item"><label>テンション (Tension)</label><input type="number" id="p_tension"
+                                        placeholder="0"></div>
+                                <div class="p-item"><label>キズナ (Kizuna)</label><input type="number" id="p_kizuna"
+                                        placeholder="0"></div>
+                                <!-- Team Buff -->
+                                <div class="p-item"><label>同属性シュート (Team Same)</label><input type="number"
+                                        id="p_team_same" placeholder="0"></div>
+                                <div class="p-item"><label>異属性シュート (Team Diff)</label><input type="number"
+                                        id="p_team_diff" placeholder="0"></div>
+                                <div class="p-item"><label>同ポジシュート (Team Pos)</label><input type="number"
+                                        id="p_team_pos" placeholder="0"></div>
+                                <div class="p-item"><label>周囲シュート (Team Surr)</label><input type="number"
+                                        id="p_team_surround" placeholder="0"></div>
+                                <div class="p-item"><label>前半戦 (1st Half)</label><input type="number" id="p_half_1"
+                                        placeholder="0"></div>
+                                <div class="p-item"><label>後半戦 (2nd Half)</label><input type="number" id="p_half_2"
+                                        placeholder="0"></div>
+                                <!-- Self -->
+                                <div class="p-item"><label>敵陣 (Enemy Terr)</label><input type="number" id="p_self_enemy"
+                                        placeholder="0"></div>
+                                <div class="p-item"><label>周囲同属性 (Nearby Same)</label><input type="number"
+                                        id="p_self_same" placeholder="0"></div>
+                                <div class="p-item"><label>周囲異属性 (Nearby Diff)</label><input type="number"
+                                        id="p_self_diff" placeholder="0"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="specialCond">
+                            <span class="checkmark"></span>
+                            Special Condition (至近距離等)
+                        </label>
+                        <select id="specialCondValue" disabled>
+                            <option value="1.1">1.1x</option>
+                            <option value="1.2">1.2x</option>
+                        </select>
+                    </div>
+                </section>
+            </main>
+            <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+                <p>Created by @skd</p>
+            </footer>
+        </div> <!-- End content-wrapper -->
+    </div> <!-- End app-container -->
+    <script src="script.js"></script>
+</body>
+</html> 
